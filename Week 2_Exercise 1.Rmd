@@ -1,0 +1,441 @@
+---
+title: "Univariate Exercise 1"
+author: "Isabella Sun"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r getData}
+link='https://github.com/EvansDataScience/VisualAnalytics_2_tabularData/raw/master/data/eduwa.rda'
+#getting the data TABLE from the file in the cloud:
+load(file=url(link))
+```
+
+
+```{r dataSTR }
+
+str(eduwa,width = 70,strict.width='cut')
+```
+
+```{r head }
+head(eduwa$LocaleType,50) #first fifty values
+```
+
+
+```{r freqTab_abs }
+# absolute values
+table(eduwa$LocaleType,exclude = 'nothing')
+```
+
+```{r freqTab_rel }
+# relative values
+absoluteT=table(eduwa$LocaleType,exclude = 'nothing')
+prop.table(absoluteT)
+```
+
+```{r pieBasic }
+
+ToPlot=prop.table(absoluteT)
+```
+
+```{r namesFre_NA }
+names(ToPlot)
+```
+
+
+```{r alterTable }
+names(ToPlot)[5]='Unknown'
+```
+
+
+```{r pieTitle_question }
+# the pie plots the table:
+titleText='Where are Public Schools located in WA in 2019?'
+sourceText='Source: US Department of Education'
+titleText2='WA still has schools locations unknown \n (info from 2018)'
+titleText3='WA needs to fully categorize school locations\n(info from 2018)'
+
+
+```
+
+
+
+```{r rainbowColor }
+# details:
+ToPlot=ToPlot*100 # preparing labels
+paletteHere=rainbow(length(ToPlot)) # customizing set of colors
+
+```
+
+
+```{r percentExample }
+paste0(round(ToPlot,2),'%')
+```
+
+```{r labelPercent  }
+plotLabels=paste0(round(ToPlot,2),'%') # labels for the slices
+
+```
+
+
+```{r legendPie2 }
+# MANAGING THE LEGEND:
+pie(x=ToPlot,#table
+    col = paletteHere, 
+    labels = plotLabels,
+    main=titleText,
+    sub=sourceText)
+#legend
+legend(x="right", #where
+       legend=names(ToPlot), #text
+       fill = paletteHere,
+       bty = 'n', # no box
+       cex = 0.5  # shrink
+       ) #symbols' colors
+```
+
+
+```{r barplot2  }
+paletteHereNew=c('gray') # just one color
+
+```
+
+
+```{r barplotAnnot  }
+# plotting
+location=barplot(ToPlot,
+     col = paletteHereNew,
+     border=NA,
+     main=titleText,
+     sub=sourceText,
+     ylim=c(0,50),
+     ylab = '(in %)')
+#annotating
+text(x=location,y=ToPlot,labels=plotLabels,
+     pos = 1,# if pos=3, text will be on top of bar
+     cex = 0.8) 
+```
+
+
+```{r flipBarplot  }
+# plotting
+location=barplot(ToPlot,
+     col = paletteHereNew,
+     border=NA,
+     main=titleText,
+     sub=sourceText,
+     ylim=c(0,50),
+     ylab = '(in %)',
+     horiz = T) # ORIENTATION
+#annotating
+text(x=location,y=ToPlot,labels=plotLabels,
+     pos = 1) # this is the position of the label
+```
+
+```{r flipBarplot2  }
+location=barplot(ToPlot,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText,
+         sub=sourceText,
+         xlim=c(0,50), #change to xlim
+         xlab = '(in %)', #change to xlab
+         horiz = T)
+#annotating
+text(x=ToPlot,y=location, #change of x and y
+     labels=plotLabels,
+     pos = 4)  # change position of the label
+```
+
+```{r categoryNames  }
+location=barplot(ToPlot,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText,
+         sub=sourceText,
+         cex.names = 0.7, #shrink category names
+         xlim=c(0,50), 
+         xlab = '(in %)', 
+         horiz = T)
+#annotating
+text(x=ToPlot,y=location,labels=plotLabels,pos = 4)  
+```
+
+
+```{r barSubtitle}
+location=barplot(ToPlot,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText, # no sub here!
+         xlim=c(0,50), 
+         cex.names = 0.5,
+         xlab = '(in %)', 
+         horiz = T)
+# annotating
+text(x=ToPlot,y=location,labels=plotLabels,pos = 4)  
+# subtitle
+title(sub=sourceText, 
+      adj=0,#adj=1 aligns to rigth.
+      cex.sub=0.7) #shrinking text
+```
+
+```{r mgp_Barplot  }
+# changing parameters
+# (distanceOfUnit To plot, 
+# distanceOfAxislabels to plot,
+# distance ofTicks to plot)
+# default is: mgp=c(3, 1, 0)
+par(mgp=c(0.5,0.5,0)) 
+#####
+location=barplot(ToPlot,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText,
+         xlim=c(0,50), 
+         xlab = '(in %)',
+         cex.names = 0.6,
+         cex.lab=0.6, # shrinking label text
+         horiz = T) 
+text(x=ToPlot,y=location,labels=plotLabels,pos = 4) 
+title(sub=sourceText, adj=0,cex.sub=0.7,
+      line = 3) #push the text down
+```
+
+```{r refLine_bar }
+titleText2='Are all locations getting a fair share of public schools in WA?'
+par(mgp=c(1,0.5,0)) 
+location=barplot(ToPlot,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText2,
+         xlim=c(0,50), 
+         cex.names = 0.6,
+         cex.lab=0.6,
+         xlab = '(in %)',
+         horiz = T
+         ) 
+text(x=ToPlot,y=location,labels=plotLabels,pos = 4) 
+title(sub=sourceText, adj=0,cex.sub=0.7,
+      line = 3) 
+# reference line
+abline(v=25,#position vertical
+       lty=3,#type
+       lwd=3)#width
+```
+
+```{r lastPlot_bar}
+par(mgp=c(1,0.5,0)) 
+location=barplot(ToPlot,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText2,
+         xlim=c(0,50), 
+         xlab = '(in %)',
+         cex.names=0.6,
+         cex.lab=0.6,
+         las=2,
+         horiz = T,
+         xaxt="n") # no x-axis, so I customize it below...
+text(x=ToPlot,y=location,labels=plotLabels,pos = 4,cex = 0.7) 
+title(sub=sourceText, adj=0,cex.sub=0.7,line = 3) 
+#reference line
+abline(v=25,lty=3,lwd=3)
+# customizing tick values
+newXvalues<-c(0,10,25,40,50) # you just want to show this on the axis
+axis(side=1, 
+     at=newXvalues, 
+     labels = newXvalues,
+     cex.axis=0.8)
+```
+
+###Create ordered bar plot using ggplot 
+### METHOD 1
+####HERE I MAKE A CHANGE TO ORDER THE BAR PLOT 
+ --------------------------------------------
+```{r}
+
+OrderedToPlot=sort(ToPlot) 
+```
+###--------------------------------------------
+ 
+```{r ggplot1}
+tableFreq=as.data.frame(OrderedToPlot)
+names(tableFreq)=c("locale","pct")
+
+```
+
+```{r }
+tableFreq
+```
+
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+base= ggplot(data = tableFreq, 
+             aes(x = reorder(locale,pct), # reordering in the ggplot command
+                 y = pct)) 
+
+plot1 = base + geom_bar(fill ="gray",
+                        stat = 'identity') 
+plot2 = plot1 + labs(title=titleText2,
+                     x =NULL, 
+                     y = NULL,
+                     caption = sourceText)
+plot3 = plot2 + geom_hline(yintercept = 25, 
+                           linetype="dashed", 
+                           size=1.5,
+                           alpha=0.5) 
+
+plot4 = plot3 + scale_y_continuous(breaks=c(0,10, 25,40,50),
+                                 limits = c(0, 50),
+                                 labels=scales::unit_format(suffix = '%')) 
+
+plot5 = plot4 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.caption = element_text(hjust = 0), 
+                    plot.title = element_text(hjust = 0.5))
+
+plot6 = plot5 + geom_text(aes(y = pct ,
+                            label = paste0(round(pct,2), '%')),
+                        hjust=1,
+                        size = 3)
+
+plot7=plot6 + coord_flip()
+
+plot7
+```
+
+
+```{r}
+###
+ToPlotOrd=sort(ToPlot)
+```
+
+####ADDED THIS LINE BECAUSE THE LABELS WERE NOT SHOWING UP IN THE RIGHT ORDER
+```{r}
+plotLabels=paste0(round(ToPlotOrd,2),'%') # labels for the slices
+
+```
+
+```{r}
+
+###
+
+par(mgp=c(1,0.5,0)) # distance label, tickText,tick
+location=barplot(ToPlotOrd,
+         col = paletteHereNew,
+         border=NA,
+         main=titleText2,
+         xlim=c(0,50), 
+         xlab = '(in %)',
+         horiz = T,
+         cex.names = 0.7,
+         cex.lab=0.6,
+         xaxt="n") # no x-axis, so I customize it below...
+
+text(x=ToPlotOrd,y=location,labels=plotLabels,pos = 2,cex = 0.7) 
+title(sub=sourceText, adj=0,cex.sub=0.7,line = 3) 
+
+# reference line
+abline(v=25,lty=3,lwd=3)
+
+# customizong tick values
+xtick<-c(0,10,25,40,50)
+axis(side=1, at=xtick, labels = xtick,cex.axis=0.8)
+```
+
+###METHOD 2 
+####Ordered bar plot using ggplot - using a different method 
+
+```{r}
+tableFreq2=as.data.frame(ToPlot)
+names(tableFreq2)=c("locale","pct")
+```
+
+```{r}
+base= ggplot(data = tableFreq, 
+             aes(x = reorder(locale,pct), # reordering in the ggplot command
+                 y = pct)) 
+
+plot1 = base + geom_bar(fill ="gray",
+                        stat = 'identity') 
+plot2 = plot1 + labs(title=titleText2,
+                     x =NULL, 
+                     y = NULL,
+                     caption = sourceText)
+plot3 = plot2 + geom_hline(yintercept = 25, 
+                           linetype="dashed", 
+                           size=1.5,
+                           alpha=0.5) 
+
+plot4 = plot3 + scale_y_continuous(breaks=c(0,10, 25,40,50),
+                                 limits = c(0, 50),
+                                 labels=scales::unit_format(suffix = '%')) 
+
+plot5 = plot4 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.caption = element_text(hjust = 0), 
+                    plot.title = element_text(hjust = 0.5))
+
+plot6 = plot5 + geom_text(aes(y = pct ,
+                            label = paste0(round(pct,2), '%')),
+                        hjust=1,
+                        size = 3)
+
+plot7=plot6 + coord_flip()
+
+plot7
+
+
+```
+###METHOD 3
+
+```{r}
+tableFreq[order(tableFreq$pct),]
+
+```
+
+```{r}
+tableFreq0=tableFreq[order(tableFreq$pct),]
+```
+
+
+```{r}
+base= ggplot(data = tableFreq0, 
+             aes(x = reorder(locale,pct), # reordering in the ggplot command
+                 y = pct)) 
+
+plot1 = base + geom_bar(fill ="gray",
+                        stat = 'identity') 
+plot2 = plot1 + labs(title=titleText2,
+                     x =NULL, 
+                     y = NULL,
+                     caption = sourceText)
+plot3 = plot2 + geom_hline(yintercept = 25, 
+                           linetype="dashed", 
+                           size=1.5,
+                           alpha=0.5) 
+
+plot4 = plot3 + scale_y_continuous(breaks=c(0,10, 25,40,50),
+                                 limits = c(0, 50),
+                                 labels=scales::unit_format(suffix = '%')) 
+
+plot5 = plot4 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.caption = element_text(hjust = 0), 
+                    plot.title = element_text(hjust = 0.5))
+
+plot6 = plot5 + geom_text(aes(y = pct ,
+                            label = paste0(round(pct,2), '%')),
+                        hjust=1,
+                        size = 3)
+
+plot7=plot6 + coord_flip()
+
+plot7
+```
+
