@@ -1,0 +1,188 @@
+---
+title: "Week 3 - Exercise 2"
+output:
+
+---
+
+####Community Health Worker - Family Planning
+
+First run packages necessary to read a dta file from stata in R
+```{r}
+library(foreign)
+library(haven)
+
+```
+
+
+
+```{r}
+
+link='https://github.com/quinhasf/pubpol-599/raw/master/ape_analysis.dta'
+
+chw_fp <- read_dta(url(link)) #download from link and save in datafram named chw_fp
+
+```
+
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+names(chw_fp)
+```
+
+```{r}
+str(chw_fp)
+```
+
+
+```{r}
+toplot = chw_fp[,c('province','ape_contrib')]
+toplot
+```
+
+```{r}
+mean(chw_fp$ape_contrib)
+```
+
+
+```{r}
+
+base= ggplot(data = chw_fp, 
+             aes(x = reorder(province, -ape_contrib),
+                 y = ape_contrib)) 
+
+plot1 = base + geom_bar(fill ="gray",
+                        stat = 'identity') 
+
+title= "Where is the contribution of community health organizations \n
+meeting the goal set by the Minister?"
+source= "Source: Health Information System"
+
+plot2 = plot1 + labs(title=title,
+                     x =NULL, 
+                     y = NULL,
+                     caption = source)
+
+#include mean
+plot3 = plot2 + geom_hline(yintercept = mean(chw_fp$ape_contrib), #where
+                           linetype="dashed", 
+                           size=1.5, #thickness
+                           color="red",
+                           alpha=0.5) #transparency
+
+#include goal
+plot4 = plot3 + geom_hline(yintercept = 10, #where
+                           linetype="solid", 
+                           size=1, #thickness
+                           color="blue",
+                           alpha=0.5) #transparency
+
+plot4
+
+```
+
+
+###Lolipop Plot
+
+```{r}
+base = ggplot(toplot, aes(x=province,ape_contrib)) 
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = province, 
+                                   yend = ape_contrib, 
+                                   xend = province), color = "grey50") 
+lolliplot1 + geom_point()
+```
+
+order the data frame
+```{r}
+toplot[order(toplot$ape_contrib),]
+```
+
+now we reorder it 
+below are the reordering steps
+
+```{r}
+tableFreqO=toplot[order(toplot$ape_contrib),]
+
+
+base = ggplot(tableFreqO, aes(province,ape_contrib)) 
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = province, 
+                                   yend = ape_contrib, 
+                                   xend = province), color = "gray") 
+lolliplot2 = lolliplot1 + geom_point()
+lolliplot2 + scale_x_discrete(limits=tableFreqO$province) # key element
+
+```
+
+Changing axis values to that we can identify the gaps
+
+```{r}
+tableFreqO$gap=tableFreqO$ape_contrib-mean(chw_fp$ape_contrib)
+
+# plot the new variable
+base = ggplot(tableFreqO, aes(province,gap)) 
+
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = province, 
+                                   yend = gap, 
+                                   xend = province), color = "gray") 
+lolliplot2 = lolliplot1 + geom_point()
+lolliplot2 + scale_x_discrete(limits=tableFreqO$province) # key element
+```
+
+
+```{r}
+# a new column for color
+tableFreqO$PositiveGap=ifelse(tableFreqO$gap>0,T,F)
+
+# add new aesthetics 'color'
+base = ggplot(tableFreqO, aes(province,gap,
+                              color=PositiveGap)) #change
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = province, 
+                                   yend = gap, 
+                                   xend = province), color = "gray") 
+lolliplot2 = lolliplot1 + geom_point()
+lolliplot2 + scale_x_discrete(limits=tableFreqO$province) # key element
+```
+
+```{r}
+# a new column for color
+tableFreqO$PositiveGap=ifelse(tableFreqO$gap>0,"above average","below average")
+
+base = ggplot(tableFreqO, aes(province,gap,color=PositiveGap,
+                              label = round(gap,3))) #  change
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = province, 
+                                   yend = gap, 
+                                   xend = province), color = "gray") 
+lolliplot2=lolliplot1 + geom_point() 
+lolliplot3= lolliplot2 + scale_x_discrete(limits=tableFreqO$province) 
+# annotating and moving the text on the horizontal
+lolliplot3 + geom_text(nudge_x=0.3) 
+```
+
+avoid overlapping symbols with the below 
+```{r}
+lolliplot3 + geom_text(nudge_x=0.3,show.legend = FALSE) 
+```
+
+###Completing the table and adding in missing elements
+
+```{r,fi}
+title_loli= "Where is the contribution of community health organizations below average?"
+
+lolliplot4 = lolliplot3 + labs(title=title_loli,
+                     x =NULL, 
+                     y = NULL,
+                     caption = source)
+
+lolliplot5 = lolliplot4 + geom_text(nudge_x=0.3, show.legend = FALSE) 
+
+lolliplot5
+
+```
+
