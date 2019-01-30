@@ -1,0 +1,95 @@
+---
+title: "Week 4 Exercise 3"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+
+link='https://github.com/EvansDataScience/data/raw/master/eduwa.rda'
+
+#getting the data TABLE from the file in the cloud:
+load(file=url(link))
+```
+
+```{r}
+table(eduwa$High.Grade,exclude = 'nothing')
+```
+
+```{r}
+frqTabO=as.data.frame(prop.table(table(eduwa$High.Grade)))
+names(frqTabO)=c('grade','pct')
+frqTabO
+```
+
+
+```{r}
+box1 = ggplot(eduwa, aes(y=as.numeric(High.Grade), x='')) 
+box1 = box1 + geom_boxplot() + coord_flip() # to show it horizontally
+
+# the labels use the original ordinal levels
+ordLabels= levels(eduwa$High.Grade)
+
+box2 = box1 + scale_y_continuous(labels=ordLabels,breaks=1:15)
+box2
+```
+
+###Exercise: Make sure our box plot follows the same design approach and include all the elements as in the bar plot for nominal data.
+
+```{r}
+boxplot_title = "Box Plot of Highest Grade Offered in Washington Schools"
+source.text = 'Source: US Department of Education'
+box3=box2 + labs(title=boxplot_title,
+                     x =NULL, 
+                     y = 'Grade Level',
+                     caption = source.text)
+
+box4 = box3 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.title = element_text(hjust = 0.5),
+                    plot.caption = element_text(hjust=0))
+box4
+```
+
+
+###Exercise:
+Make a histogram for the variable FREE LUNCH, and make sure it has all the right elements, and get rid of unnecessary elements.
+
+```{r}
+names(eduwa)
+```
+
+
+```{r}
+length(unique(eduwa$Free.Lunch))
+
+summary(eduwa$Free.Lunch)
+```
+
+```{r}
+eduwa3=eduwa[complete.cases(eduwa$Free.Lunch),] #getting rid of missings
+```
+
+```{r}
+
+base= ggplot(eduwa3,aes(x = Free.Lunch))  
+h1= base + geom_histogram(color="black", fill="white", binwidth = 75,boundary=0) #changing width
+h2= h1 + stat_bin(binwidth = 75, aes(label=..count..), 
+                  geom = "text",boundary = 0,vjust=-0.5)
+
+hist.title = "Histogram of Number of Students Served Free Lunch in Washington Schools"
+
+h3 = h2 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.title = element_text(hjust = 0.5),
+                    plot.caption = element_text(hjust=0)) + labs(title=hist.title,
+                     x ="Number of Students Served Free Lunch", 
+                     y = "Frequency",
+                     caption = source.text)
+
+h3
+
+
+```
+
+
