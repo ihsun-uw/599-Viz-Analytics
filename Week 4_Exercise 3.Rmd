@@ -34,7 +34,7 @@ box2 = box1 + scale_y_continuous(labels=ordLabels,breaks=1:15)
 box2
 ```
 
-###Exercise: Make sure our box plot follows the same design approach and include all the elements as in the bar plot for nominal data.
+###Exercise 3.1: Make sure our box plot follows the same design approach and include all the elements as in the bar plot for nominal data.
 
 ```{r}
 boxplot_title = "Box Plot of Highest Grade Offered in Washington Schools"
@@ -52,7 +52,7 @@ box4
 ```
 
 
-###Exercise:
+###Exercise 3.2:
 Make a histogram for the variable FREE LUNCH, and make sure it has all the right elements, and get rid of unnecessary elements.
 
 ```{r}
@@ -92,4 +92,52 @@ h3
 
 ```
 
+####Exercise 3.4 : histogram and density plot using ggplot for student teacher ratio
+
+```{r}
+eduwa4=eduwa[complete.cases(eduwa$Student.Teacher.Ratio),]
+
+tapply(eduwa4$Student.Teacher.Ratio, 
+       eduwa4$County, 
+       mean)
+```
+
+```{r}
+#create a dataframe with information to be plotted (mean student teacher ratio by county)
+eduwa5=as.data.frame(tapply(eduwa4$Student.Teacher.Ratio, 
+       eduwa4$County, 
+       mean))
+names(eduwa5)=c('Student.Teacher.Ratio')
+
+
+```
+
+```{r}
+
+base = ggplot(eduwa5, aes(x=Student.Teacher.Ratio)) 
+
+hist1 = base +  geom_histogram(color="black", fill="white", binwidth = 2 ,boundary=0)
+
+hist.title2 = "Histogram of Average Student Teacher Ratios in Washington Counties"
+  
+hist2 = hist1 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.title = element_text(hjust = 0.5),
+                    plot.caption = element_text(hjust=0)) + labs(title=hist.title2,
+                     x ="Student Teacher Ratio", 
+                     y = "Frequency",
+                     caption = source.text)
+hist3 = hist2 + scale_x_continuous(breaks=seq(0,24,2)) #adding more tick marks on the x axis
+
+hist4 = hist3 + scale_y_continuous(breaks=seq(0,20,5)) # tick marks on y axis
+
+hist5 = hist4 + geom_vline(aes(xintercept = mean(eduwa5$Student.Teacher.Ratio),colour="mean"),
+                           show.legend  = TRUE) +
+                geom_vline(aes(xintercept = median(eduwa5$Student.Teacher.Ratio),colour="median"),
+                           show.legend  = TRUE) + 
+                scale_color_manual(name = NULL, 
+                                   values = c(median = "blue", mean = "red"))
+hist5
+
+```
 
