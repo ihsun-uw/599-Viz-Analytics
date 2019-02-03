@@ -141,3 +141,31 @@ hist5
 
 ```
 
+```{r}
+#density plot
+
+density.title = "Density Plot of Average Student Teacher Ratios in Washington Counties"
+
+den1 = base + geom_density(color="black", fill="white")
+
+den2 = den1 + theme(panel.background = element_rect(fill = "white",
+                                                    colour = "grey50"),
+                    plot.title = element_text(hjust = 0.5),
+                    plot.caption = element_text(hjust=0)) + labs(title=density.title,
+                     x ="Student Teacher Ratio", 
+                     y = "Density",
+                     caption = source.text)
+
+den3 = den2 + scale_x_continuous(breaks=seq(0,24,2))
+
+den4 = den3 + geom_vline(aes(xintercept = mean(eduwa5$Student.Teacher.Ratio),colour="mean"),
+                           show.legend  = TRUE) +
+                geom_vline(aes(xintercept = median(eduwa5$Student.Teacher.Ratio),colour="median"),
+                           show.legend  = TRUE) + 
+                scale_color_manual(name = NULL, 
+                                   values = c(median = "blue", mean = "red"))
+
+den4
+
+```
+
