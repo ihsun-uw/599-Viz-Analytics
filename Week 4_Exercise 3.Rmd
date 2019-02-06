@@ -31,7 +31,7 @@ box1 = box1 + geom_boxplot() + coord_flip() # to show it horizontally
 ordLabels= levels(eduwa$High.Grade)
 
 box2 = box1 + scale_y_continuous(labels=ordLabels,breaks=1:15)
-box2
+
 ```
 
 ###Exercise 3.1: Make sure our box plot follows the same design approach and include all the elements as in the bar plot for nominal data.
